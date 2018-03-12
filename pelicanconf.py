@@ -6,11 +6,14 @@ AUTHOR = u'Corey Adams'
 SITENAME = u'Harvard-Production'
 SITEURL = ''
 
-PATH = 'content'
+THEME = 'theme/bootstrap'
+
+PATH = 'output'
 
 TIMEZONE = 'America/New_York'
 
 DEFAULT_LANG = u'en'
+DEFAULT_DATE = 'fs'
 
 # Feed generation is usually not desired when developing
 FEED_ALL_ATOM = None
@@ -20,14 +23,13 @@ AUTHOR_FEED_ATOM = None
 AUTHOR_FEED_RSS = None
 
 # Blogroll
-LINKS = (('Pelican', 'http://getpelican.com/'),
-         ('Python.org', 'http://python.org/'),
-         ('Jinja2', 'http://jinja.pocoo.org/'),
-         ('You can modify those links in your config file', '#'),)
+LINKS = (('Github', 'https://github.com/Harvard-Production'),
+         ('Research', 'https://www.physics.harvard.edu/people/facpages/guenette'),
+)
 
 # Social widget
-SOCIAL = (('You can add links in your config file', '#'),
-          ('Another social link', '#'),)
+SOCIAL = (('Github', ''),
+         )
 
 DEFAULT_PAGINATION = False
 
