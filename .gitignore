@@ -1,3 +1,5 @@
+harvard-production-summary.html
+*.pid
 *.pyc
 output
 _site/
