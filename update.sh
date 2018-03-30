@@ -20,6 +20,7 @@ rm -f tempDatasets.md
 
 touch tempDatasets.md
 echo "title: Datasets" >> tempDatasets.md
+echo "sortorder: 333" >> tempDatasets.md
 echo "Last updated: $(date)" >> tempDatasets.md
 
 cat harvard_projects_summary.html >> tempDatasets.md
