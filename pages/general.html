@@ -51,12 +51,26 @@
 	  </div>
 	  <div class="content">
 	<div class='page'>
-		<div class="page-header"><h1>About</h1></div>
-		<div><p>This webpage is a monitoring webpage for the harvard production of files.</p>
-<p>Go to the <a href="/pages/general.html">General</a> page to learn about our resources, production goals, and instructions for logging in to the clusters.</p>
-<p>You can see the <a href="/pages/datasets.html">Datasets</a> page to see the current status of datasets - files produced, number of events, disk usage, etc.</p>
-<p>Useful slurm commands are shown</p>
-<p>For more information or requests, contact coreyadams [at] fas.harvard.edu</p></div>
+		<div class="page-header"><h1>General</h1></div>
+		<div><p>Ssh portal:
+[username]@login.rc.fas.harvard.edu</p>
+<p>Group area:
+/n/holylfs/LABS/guenette_lab/</p>
+<p>Check our group nodes:
+sinfo -p guenette</p>
+<p>Check job status:
+squeue -u cadams</p>
+<p>Use /n/holylfs/LABS/guenette_lab/data/users for output</p>
+<p>How to get an interactive node:
+srun --pty -n 32 -N 1 -p guenette -t 200 --mem 128000 /bin/bash</p>
+<p>Put your software /n/holylfs/LABS/guenette_lab/users</p>
+<p>Check our group quota with: lfs quota -hg guenette_lab /n/holylfs/</p>
+<p>Setup larsoft area at:
+source /n/holylfs/LABS/guenette_lab/software/larsoft/setup
+setup larsoft v0....
+setup mrb</p>
+<p>There is also cvmfs</p>
+<p>[Stupid bug: need to set up curl: 'module load curl']</p></div>
 	</div>
 		<footer>
 		  <p>Powered by <a href="http://getpelican.com/">Pelican</a>. Theme based on <a href="http://twitter.github.com/bootstrap/">Twitter Bootstrap</a>.</p>
