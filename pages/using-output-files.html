@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<title>Harvard-Production</title>
+	<meta name="description" content="">
+	<meta name="author" content="Corey Adams">
+
+	<!-- HTML5 shim, for IE6-8 support of HTML elements -->
+	<!--[if lt IE 9]>
+		<script src="/theme/html5.js"></script>
+	<![endif]-->
+
+	<!-- Styles -->
+	<link href="/theme/bootstrap.min.css" rel="stylesheet">
+	<link href="/theme/local.css" rel="stylesheet">
+	<link href="/theme/pygments.css" rel="stylesheet">
+
+	<!-- Feeds -->
+
+
+
+
+</head>
+<body>
+	<div class="topbar">
+	  <div class="topbar-inner">
+		<div class="container-fluid">
+		  <a class="brand" href="/">Harvard-Production</a>
+			<ul class="nav">
+						<li><a href="/pages/about.html">About</a></li>
+						<li><a href="/pages/configuration-files.html">Configuration Files</a></li>
+						<li><a href="/pages/datasets.html">Datasets</a></li>
+						<li><a href="/pages/general.html">General</a></li>
+						<li><a href="/pages/slurm.html">Slurm</a></li>
+						<li><a href="/pages/using-output-files.html">Using Output Files</a></li>
+			</ul>
+			<p class="pull-right"><a href="/archives.html">[archives]</a> <a href="/tags.html">[tags]</a></p>
+		</div>
+	  </div>
+	</div>
+
+	<div class="container-fluid">
+	  <div class="sidebar">
+		<div class="well">
+			<h3>Links</h3>
+			<ul>
+				<li><a href="https://github.com/Harvard-Production">Github</a></li>
+				<li><a href="https://www.physics.harvard.edu/people/facpages/guenette">Research</a></li>
+				<li><a href="https://microboone-exp.fnal.gov/">Microboone</a></li>
+				<li><a href="http://next.ific.uv.es/next/">NEXT</a></li>
+			</ul>
+		</div>
+	  </div>
+	  <div class="content">
+	<div class='page'>
+		<div class="page-header"><h1>Using Output Files</h1></div>
+		<div><p>On this page, I'll describe some of the ways in which you can use the output files.</p>
+<h2>Database interactions</h2>
+<p>If you have the production software set up, you have access to some python classes that will handle database interactions yourself.  In particular, there is a class for reading the list of datasets <code>ProjectReader.py</code> and a class for reading attributes of a particular dataset <code>DatasetReader.py</code>.</p>
+<h3>Project Reader</h3>
+<p>Probably, you wont have to interact much with this class, but if you want to your options are basically limited to listing all datasets, and then finding heirarchy information.</p>
+<div class="highlight"><pre><span></span><span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">database</span> <span class="kn">import</span> <span class="n">ProjectReader</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">pr</span> <span class="o">=</span> <span class="n">ProjectReader</span><span class="p">()</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">pr</span><span class="o">.</span><span class="n">list_datasets</span><span class="p">()</span>
+<span class="p">((</span><span class="s1">&#39;bnb_plus_cosmics_mcc86_reco2&#39;</span><span class="p">,),</span> <span class="p">(</span><span class="s1">&#39;bnb_plus_cosmics_mcc86_reco2_test&#39;</span><span class="p">,),</span> <span class="p">(</span><span class="s1">&#39;sbnd_dl_cosmics_larcv&#39;</span><span class="p">,),</span> <span class="p">(</span><span class="s1">&#39;sbnd_dl_cosmics_larsoft&#39;</span><span class="p">,),</span> <span class="p">(</span><span class="s1">&#39;sbnd_dl_NC_cosmics_larcv&#39;</span><span class="p">,),</span> <span class="p">(</span><span class="s1">&#39;sbnd_dl_NC_cosmics_larsoft&#39;</span><span class="p">,),</span> <span class="p">(</span><span class="s1">&#39;sbnd_dl_NC_larcv&#39;</span><span class="p">,),</span> <span class="p">(</span><span class="s1">&#39;sbnd_dl_NC_larsoft&#39;</span><span class="p">,),</span> <span class="p">(</span><span class="s1">&#39;sbnd_dl_nueCC_cosmics_larcv&#39;</span><span class="p">,),</span> <span class="p">(</span><span class="s1">&#39;sbnd_dl_nueCC_cosmics_larsoft&#39;</span><span class="p">,),</span> <span class="p">(</span><span class="s1">&#39;sbnd_dl_nueCC_larcv&#39;</span><span class="p">,),</span> <span class="p">(</span><span class="s1">&#39;sbnd_dl_nueCC_larsoft&#39;</span><span class="p">,),</span> <span class="p">(</span><span class="s1">&#39;sbnd_dl_numuCC_cosmics_larcv&#39;</span><span class="p">,),</span> <span class="p">(</span><span class="s1">&#39;sbnd_dl_numuCC_cosmics_larsoft&#39;</span><span class="p">,),</span> <span class="p">(</span><span class="s1">&#39;sbnd_dl_numuCC_larcv&#39;</span><span class="p">,),</span> <span class="p">(</span><span class="s1">&#39;sbnd_dl_numuCC_larsoft&#39;</span><span class="p">,))</span>
+</pre></div>
+
+
+<h3>Dataset Reader</h3>
+<p>This is more useful if you want to right a script that can process your output files.</p>
+<p>There are a few useful functions:</p>
+<p><code>list_file_locations(dataset)</code> will tell you all the full path of all the files in a dataset.  If it's a big dataset, you're going to get a very long list back.</p>
+<p><code>sum(dataset, target)</code> will sum the target value in the database.  So, for example:</p>
+<div class="highlight"><pre><span></span><span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">database</span> <span class="kn">import</span> <span class="n">DatasetReader</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">dr</span> <span class="o">=</span> <span class="n">DatasetReader</span><span class="p">()</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">dr</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="s1">&#39;bnb_plus_cosmics_mcc86_reco2_test&#39;</span><span class="p">,</span> <span class="s1">&#39;nevents&#39;</span><span class="p">)</span>
+<span class="n">Decimal</span><span class="p">(</span><span class="s1">&#39;10&#39;</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">dr</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="s1">&#39;bnb_plus_cosmics_mcc86_reco2_test&#39;</span><span class="p">,</span> <span class="s1">&#39;nevents&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">Decimal</span><span class="p">(</span><span class="s1">&#39;5&#39;</span><span class="p">)</span>
+</pre></div>
+
+
+<p>On the second call, I constrained the type of file to be '0' which is the real output file.  (1 == ana file)</p>
+<h4>Database Schema</h4>
+<p>If you want to know more about the database schema, you can see the scheme file on the production tools <a href="https://github.com/Harvard-Production/production-tools/blob/master/python/database/schema.md">github</a></p>
+<h2>Merging output files</h2>
+<p>There is a script, <code>merge_ana.py</code>, that can merge ana output files for you from a dataset.  If you want, you can even have it split the output files into several different files.  The only know use case if for training a machine learning algorithm and having train/test/val files, etc.</p>
+<div class="highlight"><pre><span></span>usage: merge_ana.py <span class="o">[</span>-h<span class="o">]</span> -p PROJECT -o OUTPUT <span class="o">[</span>-s SPLIT<span class="o">]</span> <span class="o">[</span>--script SCRIPT<span class="o">]</span>
+
+Analysis file merger
+
+optional arguments:
+  -h, --help            show this <span class="nb">help</span> message and <span class="nb">exit</span>
+  -p PROJECT, --project PROJECT
+                        Project to merge analysis files <span class="k">for</span>
+  -o OUTPUT, --output OUTPUT
+                        Top Level output directory <span class="k">for</span> this merging.
+  -s SPLIT, --split SPLIT
+                        Dictionary format <span class="k">for</span> how to split the data, order
+                        matters.
+  --script SCRIPT       Optional script to run merging with, defaults to
+                        <span class="s1">&#39;hadd&#39;</span>
+</pre></div>
+
+
+<p>This script will use <code>hadd</code> by default, but you can override this.  In principle, if you have a script that processes your files, and the format is <code>[script] [output_name] [inputfile1 inputfile2 ...]</code> then you can pass it as the argument to this script and it will run for you.  I've never tried it, though ....</p>
+<p>The split functionality requires a json formatted string on the command line.</p></div>
+	</div>
+		<footer>
+		  <p>Powered by <a href="http://getpelican.com/">Pelican</a>. Theme based on <a href="http://twitter.github.com/bootstrap/">Twitter Bootstrap</a>.</p>
+		  <p>&copy; Corey Adams</p>
+		</footer>
+	  </div>
+
+	</div>
+</body>
+</html>

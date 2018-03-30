@@ -28,11 +28,12 @@
 		<div class="container-fluid">
 		  <a class="brand" href="/">Harvard-Production</a>
 			<ul class="nav">
-						<li><a href="/pages/configuration-example.html">Configuration Example</a></li>
+						<li><a href="/pages/about.html">About</a></li>
+						<li><a href="/pages/configuration-files.html">Configuration Files</a></li>
 						<li><a href="/pages/datasets.html">Datasets</a></li>
 						<li><a href="/pages/general.html">General</a></li>
 						<li><a href="/pages/slurm.html">Slurm</a></li>
-						<li><a href="/pages/about.html">About</a></li>
+						<li><a href="/pages/using-output-files.html">Using Output Files</a></li>
 			</ul>
 			<p class="pull-right"><a href="/archives.html">[archives]</a> <a href="/tags.html">[tags]</a></p>
 		</div>
@@ -46,31 +47,84 @@
 			<ul>
 				<li><a href="https://github.com/Harvard-Production">Github</a></li>
 				<li><a href="https://www.physics.harvard.edu/people/facpages/guenette">Research</a></li>
+				<li><a href="https://microboone-exp.fnal.gov/">Microboone</a></li>
+				<li><a href="http://next.ific.uv.es/next/">NEXT</a></li>
 			</ul>
 		</div>
 	  </div>
 	  <div class="content">
 	<div class='page'>
 		<div class="page-header"><h1>General</h1></div>
-		<div><p>Ssh portal:
-[username]@login.rc.fas.harvard.edu</p>
-<p>Group area:
-/n/holylfs/LABS/guenette_lab/</p>
-<p>Check our group nodes:
-sinfo -p guenette</p>
-<p>Check job status:
-squeue -u cadams</p>
-<p>Use /n/holylfs/LABS/guenette_lab/data/users for output</p>
-<p>How to get an interactive node:
-srun --pty -n 32 -N 1 -p guenette -t 200 --mem 128000 /bin/bash</p>
-<p>Put your software /n/holylfs/LABS/guenette_lab/users</p>
-<p>Check our group quota with: lfs quota -hg guenette_lab /n/holylfs/</p>
-<p>Setup larsoft area at:
-source /n/holylfs/LABS/guenette_lab/software/larsoft/setup
-setup larsoft v0....
-setup mrb</p>
-<p>There is also cvmfs</p>
-<p>[Stupid bug: need to set up curl: 'module load curl']</p></div>
+		<div><h2>Harvard Odyssey Cluster</h2>
+<p>Harvard's Odyssey cluster quick start guide is <a href="https://www.rc.fas.harvard.edu/resources/odyssey-quickstart-guide/">here</a>.  It's a good way to get up to speed on the basics of the cluster.</p>
+<p>You will need to set up two factor authentication to log in to the cluster, instructions from harvard are available <a href="https://www.rc.fas.harvard.edu/resources/documentation/openauth/">here</a>.  For problems or questions, please contact harvard directly.</p>
+<h2>Logging in to the Harvard Cluster</h2>
+<p>Once you have you authentication squared away, you can log in to the nodes via <code>ssh [username]@login.rc.fas.harvard.edu</code>.  This will land you in your home directory (for me, <code>/n/home00/cadams/</code>).  We also have a shared group space which is at <code>/n/holylfs/LABS/guenette_lab</code>.</p>
+<p>If you log in and take a look in our shared group area, you'll see this type of structure:</p>
+<div class="highlight"><pre><span></span><span class="o">[</span>cadams@holy2c18201 guenette_lab<span class="o">]</span>$ <span class="nb">pwd</span>
+/n/holylfs/LABS/guenette_lab
+<span class="o">[</span>cadams@holy2c18201 guenette_lab<span class="o">]</span>$ ls
+data  production  software  users
+<span class="o">[</span>cadams@holy2c18201 guenette_lab<span class="o">]</span>$
+</pre></div>
+
+
+<p>Here, the <code>users</code> directory is a good spot to do development, store you built code (anything stored in our group area is accessible from worker nodes), and put small files and such.  For large output files, particularly if you're writing many simultaneously, you're better off writing them to the <code>data/users/</code> area.  You don't need special permissions to make yourself a directory in these areas.  Just go ahead and do it.</p>
+<h3>Software</h3>
+<p>In the <code>software</code> directory, I have installed larsoft and several other things.  Currently, the following versions of uboonecode are installed there:</p>
+<ul>
+<li>v06_26_01_09 (e10:prof)</li>
+<li>v06_26_01_10 (e10:prof)</li>
+<li>v06_26_01_12 (e10:prof)</li>
+<li>v06_26_01_13 (e10:prof)</li>
+</ul>
+<p>Additionally, you can get larsoft versions:</p>
+<ul>
+<li>v06_26_01_07 (e10:prof)</li>
+<li>v06_26_01_08 (e10:prof)</li>
+<li>v06_26_01_09 (e10:prof)</li>
+<li>v06_26_01_10 (e10:prof)</li>
+<li>v06_67_00 (e15:prof)</li>
+</ul>
+<p>Need a different version of larsoft?  Check out <a href="/pages/larsoft.html">installing a new version of larsoft</a></p>
+<h2>Interactive Jobs</h2>
+<p>Once you log on, unless you are just here to check the status of your running jobs, you probably want an interactive node.  If you're just submitting jobs from an interactive node (which is fine if the log in nodes are slow and driving you crazy), you can get a single interactive node of ours with:</p>
+<div class="highlight"><pre><span></span>srun --pty -n <span class="m">1</span> -N <span class="m">1</span> -p guenette -t <span class="m">200</span> --mem <span class="m">4000</span> /bin/bash
+</pre></div>
+
+
+<p>Please, don't put this in your .bash_profile.  If our queue is full, or something changes about our partition info, it's possible this command will never complete and you will just have a hanging shell waiting to get an impossible interactive job.  Feel free to alias it in you .bash_profile, though, something like this:</p>
+<div class="highlight"><pre><span></span><span class="nb">alias</span> <span class="nv">interactive_node</span><span class="o">=</span><span class="s1">&#39;srun --pty -n 1 -N 1 -p guenette -t 200 --mem 4000 /bin/bash&#39;</span>
+<span class="nb">alias</span> <span class="nv">interactive_node_8core</span><span class="o">=</span><span class="s1">&#39;srun --pty -n 8 -N 1 -p guenette -t 200 --mem 32000 /bin/bash&#39;</span>
+</pre></div>
+
+
+<p>Our current nodes have 32 cores, and share 128 GB of memory.  We have 16 total nodes.  We're supposed to get upgraded to 16 new nodes, 8 of which will have 256GB of memory per node (8GB per core).  I don't know when that will happen ...</p>
+<h2>Submitting Jobs</h2>
+<p>You can read all about slurm and how to submit jobs on the <a href="https://www.rc.fas.harvard.edu/resources/odyssey-quickstart-guide/">Odyssey quick start guide</a> or the slurm site <a href="https://slurm.schedmd.com/">itself</a>.</p>
+<p>For small jobs, if you want to write a little script to run the jobs go right ahead.  If you want to run larger jobs, or use our MCC8 dataset for microboone, use the production software <a href="https://github.com/Harvard-Production/production-tools">github</a>.</p>
+<p>I maintain the production tools instance for everyone.  You are welcome to browse the code, suggest changes, make pull requests, etc.  To ensure stability of jobs, there is a static version of the production code available at <code>/n/holylfs/LABS/guenette_lab/production/production-tools/</code>.  You can set up the tools like this:</p>
+<div class="highlight"><pre><span></span><span class="o">[</span>cadams@holy2c18201 production<span class="o">]</span>$ <span class="nb">source</span> /n/holylfs/LABS/guenette_lab/production/production-tools/setup.sh
+Setting up production tools from /n/holylfs/LABS/guenette_lab/production/production-tools...
+To submit jobs, use the syntax
+  production.py -y config.yml <span class="o">[</span>-s stage<span class="o">]</span> --<span class="o">[</span>clean <span class="p">|</span> submit <span class="p">|</span> check <span class="p">|</span> status<span class="o">]</span>
+</pre></div>
+
+
+<p>You can see this is telling you to use the script <code>production.py</code> - if you're coming from the fermigrid and microboone, you're familiar with <code>project.py</code>.  This is pretty similar.  I deliberately changed the name in case someone sets up ubutil here, there will be no confusing conflicts.</p>
+<p>To run these jobs, you need a yaml configuration file.  In particular this uses the python implementation of <a href="https://github.com/yaml">yaml</a>.  You can learn more about the configuration files, and find some examples, over on the <a href="/pages/configuration-files.html">configuration</a> page.</p>
+<h2>Monitoring jobs</h2>
+<p>You can monitor your jobs online through harvards job <a href="https://portal.rc.fas.harvard.edu/jobs/">portal</a>.  Or, if you are on an interactive or login node, you can use squeue.  If you have the production tools set up, you can can use the <code>--check</code> and <code>--status</code> commands to see how your jobs are doing.</p>
+<p><code>sinfo -p guenette</code> will tell you the status of our dedicated nodes.</p>
+<h2>Disk Usage</h2>
+<p>You can check our group quota with: <code>lfs quota -hg guenette_lab /n/holylfs/</code>.  Our quota is currently 140TB, but we've been promised 500TB.  Since most of the disk usage is from production jobs, and the production database stores file size, the <a href="/pages/datasets.html">datasets</a> page's "total" row at the bottom of the page is a pretty accurate measurement of our disk usage.</p>
+<h2>Downtimes</h2>
+<p>Once per month, roughly, there are downtimes.  Sometimes, unscheduled interruptions happen, and if they're known you can see about them <a href="https://status.rc.fas.harvard.edu/">here</a>.  Sometimes, you might be the first to notice a problem, so you can always submit a <a href="https://portal.rc.fas.harvard.edu/rcrt/submit_ticket">ticket</a> (you can also find help through the <a href="https://www.rc.fas.harvard.edu/resources/support/">support</a> page).</p>
+<h2>Miscellaneous</h2>
+<p>Here I'll just list some things that don't fit elsewhere.</p>
+<p>There is a small bug when building uboonecode from scratch. You need to set up curl: <code>module load curl</code>.  It also complains about -lxml2, which you can avoid by removing the problem directory from the build list.</p>
+<p>By default, the work directory of our jobs is <code>/n/regal/guenette_lab/work</code>.  You can use this space on interactive nodes if you want, but it's temporary storage, lifetime of ~30 days or so.  Don't store anything valuable there.  But, if your jobs are crashing and you're not sure why, you can look in the work directories to see what happened and browse the log files.</p>
+<p>Each node also has a /scratch space that you can use, if you need high speed IO.  This is as fast as it gets, since it's physically connected to the node and not shared.  But, it's only 360GB (~10 GB per core) so it can easily fill up during larsoft jobs.  In general, running interactive things from the group's home directories (/n/holylfs/LABS/guenette_lab/users/) is just fine.  You can also run from your own personal home directory.</p></div>
 	</div>
 		<footer>
 		  <p>Powered by <a href="http://getpelican.com/">Pelican</a>. Theme based on <a href="http://twitter.github.com/bootstrap/">Twitter Bootstrap</a>.</p>

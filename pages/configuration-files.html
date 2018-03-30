@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<title>Harvard-Production</title>
+	<meta name="description" content="">
+	<meta name="author" content="Corey Adams">
+
+	<!-- HTML5 shim, for IE6-8 support of HTML elements -->
+	<!--[if lt IE 9]>
+		<script src="/theme/html5.js"></script>
+	<![endif]-->
+
+	<!-- Styles -->
+	<link href="/theme/bootstrap.min.css" rel="stylesheet">
+	<link href="/theme/local.css" rel="stylesheet">
+	<link href="/theme/pygments.css" rel="stylesheet">
+
+	<!-- Feeds -->
+
+
+
+
+</head>
+<body>
+	<div class="topbar">
+	  <div class="topbar-inner">
+		<div class="container-fluid">
+		  <a class="brand" href="/">Harvard-Production</a>
+			<ul class="nav">
+						<li><a href="/pages/about.html">About</a></li>
+						<li><a href="/pages/configuration-files.html">Configuration Files</a></li>
+						<li><a href="/pages/datasets.html">Datasets</a></li>
+						<li><a href="/pages/general.html">General</a></li>
+						<li><a href="/pages/slurm.html">Slurm</a></li>
+						<li><a href="/pages/using-output-files.html">Using Output Files</a></li>
+			</ul>
+			<p class="pull-right"><a href="/archives.html">[archives]</a> <a href="/tags.html">[tags]</a></p>
+		</div>
+	  </div>
+	</div>
+
+	<div class="container-fluid">
+	  <div class="sidebar">
+		<div class="well">
+			<h3>Links</h3>
+			<ul>
+				<li><a href="https://github.com/Harvard-Production">Github</a></li>
+				<li><a href="https://www.physics.harvard.edu/people/facpages/guenette">Research</a></li>
+				<li><a href="https://microboone-exp.fnal.gov/">Microboone</a></li>
+				<li><a href="http://next.ific.uv.es/next/">NEXT</a></li>
+			</ul>
+		</div>
+	  </div>
+	  <div class="content">
+	<div class='page'>
+		<div class="page-header"><h1>Configuration Files</h1></div>
+		<div><p>The production software is organized through yaml files, which is a pretty straight forward language specification.  I thought about xml, and I thought about json, and I picked yaml because it seemed easy.  If we all agree it's terrible, I'll rewrite this and switch it.</p>
+<p>Yaml files essentially get parsed as a dictionary into the python code that runs our production software.  So, a file needs (as of now) four pieces of information to be a valid file for our production code:</p>
+<div class="highlight"><pre><span></span><span class="l l-Scalar l-Scalar-Plain">name</span><span class="p p-Indicator">:</span>
+<span class="l l-Scalar l-Scalar-Plain">top_dir</span><span class="p p-Indicator">:</span>
+<span class="l l-Scalar l-Scalar-Plain">software</span><span class="p p-Indicator">:</span>
+<span class="l l-Scalar l-Scalar-Plain">stages</span><span class="p p-Indicator">:</span>
+</pre></div>
+
+
+<p>I'll go through each of these sections here, and subsections as necessary.  There are some <strong>example files</strong> where I keep all of the production level files: <a href="https://github.com/Harvard-Production/yml-configs">github</a>.  By the way, the production software knows to check for the required keys.  If you miss one, it will tell you, you won't be able to submit jobs, and hopefully it will be obvious how to fix it.  If not, just ask.</p>
+<h1>name</h1>
+<p>This is the easiest one.  Give your job a useful name.  Grid jobs will run under this name.  This doesn't have to be unique, but I recommend it.</p>
+<h1>top_dir</h1>
+<p>The top level directory for your work files.  I frequently define it like this:</p>
+<div class="highlight"><pre><span></span><span class="l l-Scalar l-Scalar-Plain">top_dir</span><span class="p p-Indicator">:</span> <span class="nl">&amp;top_dir</span> <span class="l l-Scalar l-Scalar-Plain">/n/holylfs/LABS/guenette_lab/data/production/example_project</span>
+</pre></div>
+
+
+<p>By putting <code>&amp;top_dir</code> after the colon, I make this into a 'reference' in yaml, so this can be used later.  Yaml doesn't allow operations (so you can't say outdir : &amp;top_dir /subdirectories, sorry), but you can at least not have to rely on copy/paste.</p>
+<p>In your top directory, the production code will generate a work directory. Work will have subdirectories for each stage of jobs you run from this file.  I typically define the output location as <code>location: *top_dir</code> after setting the reference, since output will be default make a directory with the stage name under that location.  More on that below.</p>
+<h1>software</h1>
+<p>Software forms a sub-dictionary of the whole configuration file.  You have two options here.  First, you can define the whole dictionary in your main configuration file, or you can simply put a path to an independent yaml file that contains the software dictionary.  The point-to-a-software file funcationality is ready to go, I think, but has a few tests to finish it off so it's not yet on the master branch of the production tools.  It should be soon.</p>
+<p>Depending on what type of software you want, the format can vary, but the larsoft configuration is like so:</p>
+<div class="highlight"><pre><span></span><span class="c1"># REQUIRED</span>
+<span class="l l-Scalar l-Scalar-Plain">type</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">larsoft</span>
+<span class="c1"># REQUIRED: List of product areas.  All must contain &#39;setup&#39; and all will be called</span>
+<span class="c1"># There can be multiple product areas, though I haven&#39;t seen this used.</span>
+<span class="l l-Scalar l-Scalar-Plain">product_areas</span><span class="p p-Indicator">:</span>
+    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">/n/holylfs/LABS/guenette_lab/software/larsoft</span>
+<span class="c1"># OPTIONAL - local areas can be added here</span>
+<span class="l l-Scalar l-Scalar-Plain">local_areas</span><span class="p p-Indicator">:</span>
+    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">/n/holylfs/LABS/guenette_lab/users/cadams/marco/larsoft_dev/localProducts_larsoft_v06_26_01_09_e1</span>
+<span class="c1"># REQUIRED: Specific product to set up (larsoft, uboonecode, sbndcode, etc)</span>
+<span class="l l-Scalar l-Scalar-Plain">product</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">uboonecode</span>
+<span class="c1"># REQUIRED: Version of product to set up</span>
+<span class="l l-Scalar l-Scalar-Plain">version</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">v06_26_01_10</span>
+<span class="c1"># REQUIRED: Qualifiers to use for this product</span>
+<span class="l l-Scalar l-Scalar-Plain">quals</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">e10:prof</span>
+</pre></div>
+
+
+<p>There is an option for gallery code which adds the key <code>setup_scripts</code>, and it's not too hard to add an additional software configuration.  If you want to do something that doesn't seem supported, let me know.</p>
+<h1>stages</h1>
+<p>Your job can have multiple stages.  Each stage is listed here with the <code>-</code> character, indicating a list in yaml.  They don't <strong>really</strong> have to be in order, or even depend on each other.  By design, ALL stages either have no input, or receive a dataset as input.  ALL stages write their output files to a dataset.  There is no list_of_files.txt.  That was just too chaotic to manage.</p>
+<p>The <code>stages</code> section of your config file is structured like this, then:</p>
+<div class="highlight"><pre><span></span><span class="l l-Scalar l-Scalar-Plain">stages</span><span class="p p-Indicator">:</span>
+    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">stage1</span><span class="p p-Indicator">:</span>
+        <span class="p p-Indicator">[</span><span class="nv">config stuff</span><span class="p p-Indicator">]</span>
+    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">stage2</span><span class="p p-Indicator">:</span>
+        <span class="p p-Indicator">[</span><span class="nv">config stuff</span><span class="p p-Indicator">]</span>
+</pre></div>
+
+
+<p>The "config stuff" looks like this, for the larsoft software:</p>
+<div class="highlight"><pre><span></span><span class="l l-Scalar l-Scalar-Plain">stages</span><span class="p p-Indicator">:</span>
+    <span class="c1"># It&#39;s always good to put comments :)</span>
+    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">stage_name</span><span class="p p-Indicator">:</span>
+        <span class="c1"># REQUIRED: name of fcl</span>
+        <span class="c1"># These can be run successively</span>
+        <span class="l l-Scalar l-Scalar-Plain">fcl</span><span class="p p-Indicator">:</span>
+            <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">run_ubxsec_mc_bnbcosmic.fcl</span>
+        <span class="c1"># REQUIRED: number of jobs to run</span>
+        <span class="l l-Scalar l-Scalar-Plain">n_jobs</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">50</span>
+        <span class="c1"># OPTIONAL, used to calculate number of makeup jobs</span>
+        <span class="l l-Scalar l-Scalar-Plain">event_target</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">50</span>
+        <span class="c1"># OPTIONAL: maximum number of jobs to run simultaneously</span>
+        <span class="l l-Scalar l-Scalar-Plain">max_concurrent_jobs</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">50</span>
+        <span class="c1"># REQUIRED: number of events per job</span>
+        <span class="c1"># -1 is &quot;all events in the input file[s]&quot; and is the default</span>
+        <span class="l l-Scalar l-Scalar-Plain">events_per_job</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">-1</span>
+        <span class="c1"># REQUIRED: input definition</span>
+        <span class="l l-Scalar l-Scalar-Plain">input</span><span class="p p-Indicator">:</span>
+            <span class="c1"># REQUIRED: input type</span>
+            <span class="l l-Scalar l-Scalar-Plain">dataset</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">bnb_plus_cosmics_mcc86_reco2_test</span> <span class="c1"># Can be none or a name</span>
+
+            <span class="c1">#OPTIONAL: number of files per job, default == 1</span>
+            <span class="l l-Scalar l-Scalar-Plain">n_files</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">1</span>
+        <span class="c1"># REQUIRED: output definition</span>
+        <span class="l l-Scalar l-Scalar-Plain">output</span><span class="p p-Indicator">:</span>
+            <span class="c1">#REQUIRED: output location</span>
+            <span class="c1"># Must be a location for outputfiles, will add stage name if not there</span>
+            <span class="l l-Scalar l-Scalar-Plain">location</span><span class="p p-Indicator">:</span> <span class="nv">*top_dir</span>
+            <span class="c1"># The following lines are not yet implemented</span>
+            <span class="c1">#REQUIRED: dataset name (will be stored in this projects database)</span>
+            <span class="l l-Scalar l-Scalar-Plain">dataset</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">sbnd_dl_NC_larsoft</span>
+            <span class="c1">#REQUIRED: skip root files - default false</span>
+            <span class="l l-Scalar l-Scalar-Plain">anaonly</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
+            <span class="c1">#OPTIONAL: string matching key for the ana files</span>
+            <span class="l l-Scalar l-Scalar-Plain">ana_name</span><span class="p p-Indicator">:</span> <span class="s">&#39;hist&#39;</span>
+
+        <span class="c1"># REQUIRED: required memory size - default 4000, units are MB</span>
+        <span class="l l-Scalar l-Scalar-Plain">memory</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">6000</span>
+        <span class="c1"># REQUIRED: time limit.  Default 6 hours.  Format HH:MM:SS</span>
+        <span class="l l-Scalar l-Scalar-Plain">time</span><span class="p p-Indicator">:</span> <span class="s">&quot;01:00:00&quot;</span>
+</pre></div>
+
+
+<p>There are a few things to point out.</p>
+<ul>
+<li>
+<p>There is a little bit of sloppiness on my part with the event counting, job submitting, etc.  You can end up in the situation where you have events_per_job == -1 (all events) and n_jobs=50, but 10 files per job of differing sizes, etc.   It gets messy, particularly when you want to figure out how many makeup jobs to launch.  I try to handle this gracefully but if it's giving you weird behavior, please let me know.</p>
+</li>
+<li>
+<p>fcl files can be chained together.  The software will parse stdout from larsoft, figure out the output name, and use that as the input to the next fcl.  It works pretty well so far.</p>
+</li>
+<li>
+<p><code>n_jobs</code> tops out at about 7000.  This is a limitation of the slurm scheduler at Harvard.  It hasn't caused me issues, but good to know.</p>
+</li>
+<li>
+<p>The input and output blocks are themselves dictionaries.</p>
+</li>
+<li>
+<p>Input:</p>
+<ul>
+<li>You have to either say <code>none</code> or provided a dataset name for input.  If you provide a dataset, n_files will specify how many files from that dataset will get pulled per worker node.  If a job fails, the files pulled are tagged and it's recoverable.</li>
+</ul>
+</li>
+<li>
+<p>Output:</p>
+<ul>
+<li>
+<p>You have to specify a location for your output files, if it's a big project please put it under /n/holylfs/LABS/guenette_lab/data/users/[your username].</p>
+</li>
+<li>
+<p>You have to specify an output dataset name.  This really should be unique.  It will only warn you if that dataset already exists, but submit your jobs anyways.   They won't crash, but just append to that dataset.  If you really want this behavior, great.  I didn't block this by design because it's necessary for makeup jobs and extending datasets.</p>
+</li>
+<li>
+<p>Your output dataset will appear on the (datasets)[{filename}Datasets.md] page with it's statistics.  That site updates every hour, towards the end of the hour.  You can see the latest update timestamp on that page, so if it's not updating let me know.</p>
+</li>
+<li>
+<p>You can say a job is <code>anaonly</code> if you don't want to copy back the heavy input files.  If you run over the MCC8 files, you'd better do this!!</p>
+</li>
+<li>
+<p>If your job makes an anafile, you can add an <code>ana_name</code> parameter like "hist" or "ntuple" or whatever you please.  Files that have that string in their name will get copied back.  The default is 'hist'.</p>
+</li>
+</ul>
+</li>
+<li>
+<p>For reasons I haven't tried to debug, if you don't put the time in quotes it will get messed up.</p>
+</li>
+<li>
+<p>You can request as much memory as you need for your jobs.  Our current nodes have 4GB / core, shared across 128GB per node (32 nodes).  Soon, we will get half upgraded to 8GB / core, across 256 GB.  If your jobs go over memory, or time, they get killed by slurm mercilessly.</p>
+</li>
+</ul>
+<p>One other thing: You can have multiple datasets as input.  If your previous project is split into two pieces for whatever reason, you can input them as a list:</p>
+<div class="highlight"><pre><span></span>    <span class="l l-Scalar l-Scalar-Plain">input</span><span class="p p-Indicator">:</span>
+        <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">dataset1</span>
+        <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">dataset1</span>
+</pre></div>
+
+
+<p>They will merge in the input of this stage (though the original datasets are untouched in the database), and the output will contain a mixture of both datasets.</p></div>
+	</div>
+		<footer>
+		  <p>Powered by <a href="http://getpelican.com/">Pelican</a>. Theme based on <a href="http://twitter.github.com/bootstrap/">Twitter Bootstrap</a>.</p>
+		  <p>&copy; Corey Adams</p>
+		</footer>
+	  </div>
+
+	</div>
+</body>
+</html>

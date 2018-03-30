@@ -28,11 +28,12 @@
 		<div class="container-fluid">
 		  <a class="brand" href="/">Harvard-Production</a>
 			<ul class="nav">
-						<li><a href="/pages/configuration-example.html">Configuration Example</a></li>
+						<li><a href="/pages/about.html">About</a></li>
+						<li><a href="/pages/configuration-files.html">Configuration Files</a></li>
 						<li><a href="/pages/datasets.html">Datasets</a></li>
 						<li><a href="/pages/general.html">General</a></li>
 						<li><a href="/pages/slurm.html">Slurm</a></li>
-						<li><a href="/pages/about.html">About</a></li>
+						<li><a href="/pages/using-output-files.html">Using Output Files</a></li>
 			</ul>
 			<p class="pull-right"><a href="/archives.html">[archives]</a> <a href="/tags.html">[tags]</a></p>
 		</div>
@@ -46,13 +47,34 @@
 			<ul>
 				<li><a href="https://github.com/Harvard-Production">Github</a></li>
 				<li><a href="https://www.physics.harvard.edu/people/facpages/guenette">Research</a></li>
+				<li><a href="https://microboone-exp.fnal.gov/">Microboone</a></li>
+				<li><a href="http://next.ific.uv.es/next/">NEXT</a></li>
 			</ul>
 		</div>
 	  </div>
 	  <div class="content">
 	<div class='page'>
 		<div class="page-header"><h1>Slurm</h1></div>
-		<div></div>
+		<div><h3>About Slurm</h3>
+<p>Slurm is an open source resource management software.  You can even install it on your laptop if you want ... though, why would you?</p>
+<p>Most features you want from a batch submission software are available, and slurm has a decent tutorial and documentation at it's <a href="https://slurm.schedmd.com/">website</a>.  Plus, it's fairly popular, so good questions and answers are available on stack overflow.</p>
+<p>If you use the production software, a lot of slurm actions are done for you and you don't need to worry about it.  Here I'll just share some useful commands for reference, specific to our group.</p>
+<h4>Job status for running jobs</h4>
+<p>In general, <a href="https://slurm.schedmd.com/squeue.html"><code>squeue</code></a> is the command you want for checking a job's status.  For example:</p>
+<div class="highlight"><pre><span></span>squeue -u <span class="o">[</span>username<span class="o">]</span>
+squeue -p guenette
+squeue -j <span class="o">[</span>jobid<span class="o">]</span>
+</pre></div>
+
+
+<p>Harvard uses it's own version of squeue.  It mostly works fine, though it only updates every few seconds.  If you think it should list a job and you don't see it, you can try again in a few seconds and it should work.</p>
+<p>Harvard's squeue does have a noteable missing feature, it behaves poorly for job arrays (which is what is used with our production tools).  If you launch job <code>38349837</code> with an array of 10 jobs, you expect <code>squeue -j 38349837</code> to list all 10 jobs in the array.  It doesn't, but <code>/usr/bin/squeue -j 38349837</code> <strong>does</strong> work as you expect.</p>
+<h4>Job status for finished jobs</h4>
+<p>Once a job has finished, it's no longer visibile in <code>squeue</code>.  Instead, you can get information about the job with <a href="https://slurm.schedmd.com/sacct.html"><code>sacct</code></a> which will queury the slurm database for the information you want.</p>
+<h4>Changing the parameters of a running job</h4>
+<p>You can change many of the requirements of a running job or pending job without having to reschedule the job.  <a href="https://slurm.schedmd.com/scontrol.html"><code>scontrol</code></a> is the command you want for this.</p>
+<h4>Other things?</h4>
+<p>There is probably more you want to do.  Great!  Your best resources are google, and you can always send me (Corey) an email or message and I'll try to help.  If you find something that you want to do often, or think it would be good to have in the production tools software, let me know and we'll see what we can do.</p></div>
 	</div>
 		<footer>
 		  <p>Powered by <a href="http://getpelican.com/">Pelican</a>. Theme based on <a href="http://twitter.github.com/bootstrap/">Twitter Bootstrap</a>.</p>
