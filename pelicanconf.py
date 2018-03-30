@@ -22,9 +22,13 @@ TRANSLATION_FEED_ATOM = None
 AUTHOR_FEED_ATOM = None
 AUTHOR_FEED_RSS = None
 
+PAGE_ORDER_BY = 'sortorder'
+
 # Blogroll
 LINKS = (('Github', 'https://github.com/Harvard-Production'),
          ('Research', 'https://www.physics.harvard.edu/people/facpages/guenette'),
+         ('Microboone', 'https://microboone-exp.fnal.gov/'),
+         ('NEXT', 'http://next.ific.uv.es/next/'),
 )
 
 # Social widget
