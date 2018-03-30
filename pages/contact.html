@@ -54,23 +54,8 @@
 	  </div>
 	  <div class="content">
 	<div class='page'>
-		<div class="page-header"><h1>Larsoft</h1></div>
-		<div><p>So you want to install a new version of larsoft?  Ok.  But be careful.  You are going to be modifying the software directory, which is shared and maybe someone is even using it right now on the grid.  So if you break it, it could be disruptive.  That said, if you know what you're doing, you'll be fine following the instructions here.</p>
-<h3>pullProducts.sh</h3>
-<p>Fermilab uses a script called pullProducts.sh to get an install software that they distribute.  We already have this script ready to go at <code>/n/holylfs/LABS/guenette_lab/software/pullProducts.sh</code>.  The script takes arguments like this:</p>
-<div class="highlight"><pre><span></span>pullProducts &lt;options&gt; &lt;product_topdir&gt; &lt;OS&gt; &lt;bundle-spec&gt; &lt;qual_set&gt; &lt;build-spec&gt;
-</pre></div>
-
-
-<p>If you want to install uboonecode v06_26_01_5000 (which I'm sure is coming soon) you would do:</p>
-<div class="highlight"><pre><span></span><span class="nb">cd</span> /n/holylfs/LABS/guenette_lab/software
-./pullProducts /n/holylfs/LABS/guenette_lab/software/larsoft/ slf7 uboone-v06_26_01_5000 e10 prof
-</pre></div>
-
-
-<p>After this, it will pull down a lot of this (it will skip things that already exist in that directory) and eventually will complete.  You can then remove all of the <code>*.bz2</code> files it generates, and your software is good to go</p>
-<h3>Other installations</h3>
-<p>In principle, if you have a package you've built yourself using mrb, you can install it here.  If you know how to do this, and for some reason you want to, great.  If you think you want to do this but don't know how, contact me at coreyadams [at] fas.harvard.edu and I can help you.</p></div>
+		<div class="page-header"><h1>Contact</h1></div>
+		<div><p>This site is built and maintained by Corey Adams, post doc at Harvard University working with Prof. Roxanne Guenette.  The suite of production tools reached by the github link to the left is also maintained by Corey Adams, which includes the source code for this website built with pelican.  If you have questions, feedback, requests, etc, please contact me at coreyadams [at] fas.harvard.edu.</p></div>
 	</div>
 		<footer>
 		  <p>Powered by <a href="http://getpelican.com/">Pelican</a>. Theme based on <a href="http://twitter.github.com/bootstrap/">Twitter Bootstrap</a>.</p>
